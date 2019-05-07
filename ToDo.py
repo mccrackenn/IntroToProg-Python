@@ -1,35 +1,91 @@
-# '------------------------------------------------------------------------#
-#Title: To Do List, Assignment05
-#Dev: Neil McCracken
-#Date: April 29, 2019
-#Change Log: (Who, When, What)
-#   NMcCracken, 4/29/2019, Created Script
-# '------------------------------------------------------------------------#
+#-------------------------------------------------#
+# Title: Assignment06:  Organizing data with functions and classes
+# Dev:  Neil McCracken
+# Date:  May 4th, 2019
+# ChangeLog: (Who, When, What)
+#   NMcCracken 05/04/2019, Created Script
+
+#-------------------------------------------------#
+#-----------------------Data----------------------#
+lstMyList=[]
+myDic={None}
 objFile = open("ToDo.txt", "r")  # 'Reading Text File into Program
-myList = []  # 'Declaring my List
-def show():  # 'Declaring a function so I can call it multiple times
-    print("Current To Do List\n-----------------")
-    for display in myList:  # 'For loop to iterate through MyList and manipulate data for output. https://canvas.instructure.com/courses/1133362/pages/book-5-dot-4-python-combining-lists-and-dictionaries (external link)
-        first = display['task']
-        second = display['priority']
-        print(first, "--", second)
-    #return first, second (My attempt to return values back to in Save Data Step(4)
-    print("-----------------")
+strChoice=None
 
-for line in objFile: # 'Reading the text file, line by line with a for loop into multiple dictionaries
-    strChoice=line.split(",")  # 'Splitting at the comma and indexing
-    a = strChoice[0]
-    b = strChoice[1].strip('\n')
-    dic = {"task": a, "priority": b}  # 'Placing indexed variables into the dictionary
-    myList.append(dic)  # 'Appending dictionary to MyList
+##Input/Output##
+class MyClass(object):
+    """Group of Functions"""
+    @staticmethod
+    def read_file():
+        '''Turns each line of data from text.file into a dictionary'''
+        for line in objFile:  # 'Reading the text file, line by line with a for loop into multiple dictionaries
+            strTemp = line.split(",")  # 'Splitting at the comma and indexing
+            dic = {'task': strTemp[0], "priority": str(strTemp[1].strip("\n").strip(" "))}  # 'Placing indexed variables into the dictionary
+            lstMyList.append(dic)  # 'Appending dictionary to MyList
+        return lstMyList
 
-objFile.close()
+    @staticmethod
+    def ShowList(lstMyList):
+        '''Functin to display list throughout program'''
+        print("Current To Do List\n-------------------")
+        for row in lstMyList:
+            print(row['task']+"--" + row['priority'])
+        print("-------------------")
+    @staticmethod
+    def AddList(value1, value2):
+        '''Function adds new to do list items into Dictionaries'''
+        dicNewRow = {"task": value1, "priority": value2}
+        lstMyList.append(dicNewRow)
+
+    @staticmethod
+    def DelList(itemDel, lstMyList):
+        '''Function that deletes dictionaries from list'''
+        blnItemRemoved = False
+        intCounter=0
+        while (intCounter < len(lstMyList)):
+            if itemDel == str(list(dict(lstMyList[intCounter]).values())[0]).lower():
+                del lstMyList[intCounter]
+                blnItemRemoved = True
+            intCounter += 1
+        return blnItemRemoved
+
+    @staticmethod
+    def ItemStatus(value1):
+        '''Function that evaluates boolean to let user know if item was removed'''
+        if value1 == True:
+            print("Item was removed")
+        if value1 == False:
+            print("Item was not removed, please try again.")
+
+    @staticmethod
+    def SaveToFile(value1):
+        '''Function that saves data to file'''
+        if value1=="y":
+            f = open("ToDo.txt", "w")  # "Used the w to write over the existing document and update the list
+            for display in lstMyList:  # 'I tried to use another call to the show() function here but I could not get only on row on the return value
+                first = display['task']
+                second = display['priority']
+                f.write(first + "," + second + "\n")
+            f.close()
+        else:
+            print("Please try again or exit the program")
+
+    @staticmethod
+    def ExitProgram():
+        '''Function that allows user to exit program '''
+        exit()
 
 
-show()  # 'Calling the function so I can display the ToDo list to user at opening
+    @staticmethod
+    def MakeSelection():
+        '''function that allows user to make selection within while loop'''
+        strChoice = input("make a selction, 1-5: ")
+        return strChoice
 
-while strChoice != "5":  # 'While loop set to loop until user enters 5 to exit
-    print(
+    @staticmethod
+    def DisplayMenu():
+        '''function that displays the menu of options'''
+        print(
     """
     Menu of Options
 
@@ -41,59 +97,32 @@ while strChoice != "5":  # 'While loop set to loop until user enters 5 to exit
     """
 
     )
-
-    strChoice = input("Make a Selection: ")
-    if strChoice == "1":
-        show()  # 'Calling function to display ToDo List contents
-
-    if strChoice == "2":  # 'Exactly like 5-2 lab to append new entries to MyList
-        strTask = input("Enter a To Do task: ").lower()
-        strPriority = input("Enter task level priority(low, high) ").lower()
-        dicNewRow = {"task": strTask, "priority": strPriority}
-        myList.append(dicNewRow)
-
-    if strChoice == "3":
-        delItem=input("Which task do you want to remove: ").lower()
-        for i in range(len(myList)):  # 'Using a loop to delete items from the list, delItem matches task, item is removed from MyList
-            if myList[i]['task'] == delItem:
-                del myList[i]  # "https://www.geeksforgeeks.org/python-removing-dictionary-from-list-of-dictionaries/
-
-    if strChoice == "4":
-        #aReturn, bReturn=(show) Could only get 1 row of data when calling the function to avoid almost duplicate code
-        f = open("ToDo.txt", "w")  # "Used the w to write over the existing document and update the list
-        for display in myList:  # 'I tried to use another call to the show() function here but I could not get only on row on the return value
-            first = display['task']
-            second = display['priority']
-            f.write(first + "," + second + "\n")
-        continue
-        f.close()
-
-    if strChoice == "5":
-        print("Data Saved To File")
-        exit()  # 'Data saved when user exits program
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+##End of MyClass
+#Step 1
+MyClass.read_file()  # 'Load file into dictionaries and list
+MyClass.ShowList(lstMyList)  #  'Display List to User, Step 3
+while True:
+    MyClass.DisplayMenu()  # 'Step 2, display menu of choices to user with function call
+    strChoice=MyClass.MakeSelection()  # "Return variable from function call
+    if strChoice== "1":
+        MyClass.ShowList(lstMyList)  # 'Displays current list with function call
+    elif strChoice== "2":
+        value1=input("What is the task?: ")  # 'Step 4, User can add new item to list
+        value2=input("What is the priority? ")
+        MyClass.AddList(value1, value2)  # 'Positional arguments expected with function call
+        MyClass.ShowList(lstMyList)  # 'Display the new items to user
+    elif strChoice == "3":
+        itemDel=input("What task would you like to remove?: ")
+        blnItemRemoved=MyClass.DelList(itemDel, lstMyList)  # 'Step 5, Remove a new item from the list
+        MyClass.ItemStatus(blnItemRemoved)
+        MyClass.ShowList(lstMyList)
+    elif strChoice == "4":  # 'Step 6, Save current list to file, overwriting previous list
+        saveFile=input("Would you like to save the new list to file?: y/n")
+        MyClass.SaveToFile(saveFile)
+    elif strChoice == "5":  # 'Step 7, User can exit program
+        MyClass.ExitProgram()
+    else:
+        print("try again")
 
 
 
